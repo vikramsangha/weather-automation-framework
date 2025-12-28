@@ -1,0 +1,68 @@
+openapi: 3.0.1
+
+info:
+  title: Weather API
+  version: "1.0"
+
+servers:
+  - url: https://api.open-meteo.com
+
+paths:
+  /v1/forecast:
+    get:
+      summary: Get current weather
+      parameters:
+        - name: latitude
+          in: query
+          required: true
+          schema:
+            type: number
+            format: double
+        - name: longitude
+          in: query
+          required: true
+          schema:
+            type: number
+            format: double
+        - name: current_weather
+          in: query
+          required: false
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ForecastResponse"
+
+components:
+  schemas:
+    ForecastResponse:
+      type: object
+      properties:
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        timezone:
+          type: string
+        current_weather:
+          $ref: "#/components/schemas/CurrentWeather"
+
+    CurrentWeather:
+      type: object
+      properties:
+        time:
+          type: string
+        temperature:
+          type: number
+          format: double
+        windspeed:
+          type: number
+          format: double
+        winddirection:
+          type: integer
