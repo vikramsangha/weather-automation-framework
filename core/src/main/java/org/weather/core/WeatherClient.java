@@ -6,8 +6,8 @@ import org.weather.client.model.ForecastResponse;
 import java.nio.file.Path;
 import java.nio.file.Files;
 import com.google.gson.Gson;
-
-
+import okhttp3.OkHttpClient;
+import org.weather.core.auth.*;
 
 public class WeatherClient {
 
@@ -15,9 +15,16 @@ public class WeatherClient {
     private final Path fixturePath;
 
 
-    public WeatherClient(String baseUrl) {
+    public WeatherClient(String baseUrl, TokenProvider tokenProvider) {
         ApiClient apiClient = new ApiClient();
+
+        OkHttpClient httpClient = new OkHttpClient.Builder()
+                .addInterceptor(new OAuthInterceptor(tokenProvider))
+                .build();
+
+        apiClient.setHttpClient(httpClient);
         apiClient.setBasePath(baseUrl);
+
         this.api = new DefaultApi(apiClient);
         this.fixturePath = null;
     }
