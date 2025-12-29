@@ -9,7 +9,7 @@ public final class WeatherClients {
 
     public static WeatherClient defaultClient() {
         if (WeatherConfig.isOffline()) {
-            return new WeatherClient(Path.of(WeatherConfig.fixturePath()));
+            return new WeatherClient(WeatherConfig.fixturePath());
         }
 
         AuthClient authClient =

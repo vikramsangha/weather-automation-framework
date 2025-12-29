@@ -1,13 +1,15 @@
 package org.weather.tests;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.weather.core.WeatherClient;
 import org.weather.core.WeatherClients;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class WeatherClientOfflineIT {
+class WeatherClientOfflineTest {
 
+    @Tag("offline")
     @Test
     void shouldParseWeatherFromLocalFixture() {
 

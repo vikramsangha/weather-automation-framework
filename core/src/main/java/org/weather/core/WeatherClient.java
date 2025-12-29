@@ -18,18 +18,23 @@ public class WeatherClient {
     public WeatherClient(String baseUrl, TokenProvider tokenProvider) {
         ApiClient apiClient = new ApiClient();
 
-        OkHttpClient httpClient = new OkHttpClient.Builder()
-                .addInterceptor(new OAuthInterceptor(tokenProvider))
-                .build();
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
-        apiClient.setHttpClient(httpClient);
+        if (!WeatherConfig.isOffline()) {
+            System.out.println("--------------------HERE------------------------");
+            builder.addInterceptor(new OAuthInterceptor(tokenProvider));
+        }
+
+        apiClient.setHttpClient(builder.build());
         apiClient.setBasePath(baseUrl);
 
         this.api = new DefaultApi(apiClient);
         this.fixturePath = null;
     }
 
+
     public WeatherClient(Path jsonFixture) {
+        System.out.println("--------------------HERE1------------------------");
         this.api = null;
         this.fixturePath = jsonFixture;
     }

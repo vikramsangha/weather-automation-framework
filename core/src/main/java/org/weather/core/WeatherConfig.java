@@ -1,5 +1,7 @@
 package org.weather.core;
 
+import java.nio.file.Path;
+
 public final class WeatherConfig {
 
     private WeatherConfig() {}
@@ -11,11 +13,19 @@ public final class WeatherConfig {
         );
     }
 
-    public static String fixturePath() {
-        return System.getProperty("weather.fixture");
+    public static boolean isOffline() {
+        String fixture = System.getProperty("weather.fixture");
+        return fixture != null && !fixture.isBlank();
     }
 
-    public static boolean isOffline() {
-        return fixturePath() != null;
+
+    public static Path fixturePath() {
+        String path = System.getProperty("weather.fixture");
+        if (path == null || path.isBlank()) {
+            throw new IllegalStateException(
+                    "Offline mode enabled but weather.fixture is not set"
+            );
+        }
+        return Path.of(path);
     }
 }

@@ -1,5 +1,6 @@
 package org.weather.tests;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.weather.core.WeatherClient;
 import org.weather.client.model.ForecastResponse;
@@ -7,8 +8,9 @@ import org.weather.client.model.ForecastResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.weather.core.WeatherClients;
 
-class WeatherClientIT {
+class WeatherClientOnlineTest extends BaseWireMockTest {
 
+    @Tag("online")
     @Test
     void shouldFetchCurrentWeather() {
 
