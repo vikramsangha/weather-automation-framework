@@ -41,6 +41,7 @@ components:
   schemas:
     ForecastResponse:
       type: object
+      additionalProperties: true
       properties:
         latitude:
           type: number
@@ -55,6 +56,7 @@ components:
 
     CurrentWeather:
       type: object
+      additionalProperties: true
       properties:
         time:
           type: string
