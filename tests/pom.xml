@@ -45,24 +45,32 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-junit5</artifactId>
+            <version>2.25.0</version>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 
     <profiles>
 
         <profile>
-            <id>online</id>
+            <id>PROD</id>
             <properties>
                 <weather.baseUrl>https://api.open-meteo.com</weather.baseUrl>
+                <env>PROD</env>
             </properties>
         </profile>
 
         <profile>
-            <id>offline</id>
+            <id>AQA</id>
             <properties>
                 <weather.fixture>
                     ${project.basedir}/src/test/resources/fixtures/current-weather-berlin.json
                 </weather.fixture>
+                <env>AQA</env>
             </properties>
         </profile>
 
@@ -79,9 +87,13 @@
                 <configuration>
                     <groups>${test.tags}</groups>
                     <systemPropertyVariables>
+                        <allure.results.directory>
+                            ${project.build.directory}/allure-results
+                        </allure.results.directory>
                         <weather.baseUrl>${weather.baseUrl}</weather.baseUrl>
                         <weather.fixture>${weather.fixture}</weather.fixture>
                     </systemPropertyVariables>
+                    <reportNameSuffix>${env}</reportNameSuffix>
                 </configuration>
             </plugin>
 
@@ -93,9 +105,13 @@
                 <configuration>
                     <groups>${test.tags}</groups>
                     <systemPropertyVariables>
+                        <allure.results.directory>
+                            ${project.build.directory}/allure-results
+                        </allure.results.directory>
                         <weather.baseUrl>${weather.baseUrl}</weather.baseUrl>
                         <weather.fixture>${weather.fixture}</weather.fixture>
                     </systemPropertyVariables>
+                    <reportNameSuffix>${env}</reportNameSuffix>
                 </configuration>
                 <executions>
                     <execution>
@@ -106,6 +122,13 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-maven</artifactId>
+                <version>2.25.0</version>
+            </plugin>
+
 
         </plugins>
     </build>

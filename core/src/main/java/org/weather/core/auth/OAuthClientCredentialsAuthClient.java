@@ -7,12 +7,16 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OAuthClientCredentialsAuthClient implements AuthClient {
 
     private final String tokenUrl;
     private final String clientId;
     private final String clientSecret;
+    private static final Logger log = LoggerFactory.getLogger(OAuthClientCredentialsAuthClient.class);
+
 
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final Gson gson = new Gson();
@@ -51,10 +55,12 @@ public class OAuthClientCredentialsAuthClient implements AuthClient {
 
             String accessToken = (String) json.get("access_token");
             Double expiresIn = (Double) json.get("expires_in");
+            log.info("Fetching OAuth token from {}", tokenUrl);
 
             return new AuthToken(accessToken, expiresIn.longValue());
 
         } catch (Exception e) {
+            log.error("Failed to fetch OAuth token", e);
             throw new RuntimeException("Failed to fetch OAuth token", e);
         }
     }

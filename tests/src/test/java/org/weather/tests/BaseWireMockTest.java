@@ -5,6 +5,8 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
+
 
 public abstract class BaseWireMockTest {
 
@@ -18,15 +20,32 @@ public abstract class BaseWireMockTest {
         configureFor("localhost", 8089);
 
         stubFor(post(urlEqualTo("/oauth/token"))
+                .inScenario("token-expiry")
+                .whenScenarioStateIs(STARTED)
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withBody("""
-                            {
-                              "access_token": "mock-token-123",
-                              "token_type": "Bearer",
-                              "expires_in": 300
-                            }
-                        """)));
+            {
+              "access_token": "short-lived-token",
+              "token_type": "Bearer",
+              "expires_in": 1
+            }
+        """))
+                .willSetStateTo("expired"));
+
+        stubFor(post(urlEqualTo("/oauth/token"))
+                .inScenario("token-expiry")
+                .whenScenarioStateIs("expired")
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("""
+            {
+              "access_token": "refreshed-token",
+              "token_type": "Bearer",
+              "expires_in": 300
+            }
+        """)));
+
     }
 
     @AfterAll

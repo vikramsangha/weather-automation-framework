@@ -8,21 +8,34 @@ import java.nio.file.Files;
 import com.google.gson.Gson;
 import okhttp3.OkHttpClient;
 import org.weather.core.auth.*;
+import org.weather.core.domain.WeatherRequest;
+import okhttp3.logging.HttpLoggingInterceptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WeatherClient {
 
     private final DefaultApi api;
     private final Path fixturePath;
-
+    private static final Logger log =
+            LoggerFactory.getLogger(WeatherClient.class);
 
     public WeatherClient(String baseUrl, TokenProvider tokenProvider) {
+        log.info("Starting WeatherClient in PROD mode (live API)");
+        log.info("Base URL: {}", baseUrl);
         ApiClient apiClient = new ApiClient();
 
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
         if (!WeatherConfig.isOffline()) {
-            System.out.println("--------------------HERE------------------------");
             builder.addInterceptor(new OAuthInterceptor(tokenProvider));
+        }
+
+        if (WeatherConfig.isHttpLoggingEnabled()) {
+            HttpLoggingInterceptor logging =
+                    new HttpLoggingInterceptor();
+            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+            builder.addInterceptor(logging);
         }
 
         apiClient.setHttpClient(builder.build());
@@ -34,7 +47,8 @@ public class WeatherClient {
 
 
     public WeatherClient(Path jsonFixture) {
-        System.out.println("--------------------HERE1------------------------");
+        log.info("Starting WeatherClient in AQA mode (fixtures)");
+        log.info("Using fixture file: {}", jsonFixture.toAbsolutePath());
         this.api = null;
         this.fixturePath = jsonFixture;
     }
@@ -64,5 +78,10 @@ public class WeatherClient {
             throw new RuntimeException("Failed to fetch weather data", e);
         }
     }
+
+    public ForecastResponse getWeather(WeatherRequest request) {
+        return getCurrentWeather(request.latitude(), request.longitude());
+    }
+
 
 }

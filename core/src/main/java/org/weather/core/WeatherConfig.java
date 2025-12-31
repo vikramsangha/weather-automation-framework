@@ -28,4 +28,11 @@ public final class WeatherConfig {
         }
         return Path.of(path);
     }
+
+    public static boolean isHttpLoggingEnabled() {
+        return Boolean.parseBoolean(
+                System.getProperty("weather.http.logging", "true")
+        );
+    }
+
 }
